@@ -3,9 +3,14 @@
         
         public function getAll(){
             $result = $this->db->get('variables');
-            $variables = $result->result_array();
-            return $variables;
+            return $result->result_object();
         }
+
+        public function getID($id)
+	    {
+	    	$query = $this->db->get_where('variables', array('id' => $id));
+			return $query->result_object();
+	    }
 
         public function insert_variable()
 	    {    

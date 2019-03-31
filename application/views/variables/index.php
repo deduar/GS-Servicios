@@ -15,15 +15,15 @@
       </tr>
   </thead>
   <tbody>
-    <?php foreach ($data as $d) { ?>      
+    <?php foreach ($variables as $variable) { ?>      
       <tr>
-        <td><?php echo $d["description"]; ?></td>
-        <td><?php echo "[<u><b>".$d["slug"]."</b></u>]"; ?></td>
-        <td><?php echo $d["created"]; ?></td>
-        <td><?php echo $d["modified"]; ?></td>
+        <td><?php echo $variable->description; ?></td>
+        <td><?php echo $variable->slug; ?></td>
+        <td><?php echo $variable->created; ?></td>
+        <td><?php echo $variable->modified; ?></td>
         <td>
-          <a class="btn btn-primary" style="width: 70px;" href="<?php echo base_url('variable/edit/'.$d["id"]) ?>"> Edit</a>
-          <a class="btn btn-danger disabled" style="width: 70px;" href="<?php echo base_url('variable/delete/'.$d["id"]) ?>"> Delete</a>
+          <a class="btn btn-primary" style="width: 70px;" href="<?php echo base_url('variable/edit/'.$variable->id) ?>"> Edit</a>
+          <a class="btn btn-danger disabled" style="width: 70px;" href="<?php echo base_url('variable/delete/'.$variable->id) ?>"> Delete</a>
         </td>     
       </tr>
     <?php } ?>

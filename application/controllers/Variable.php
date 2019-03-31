@@ -13,10 +13,10 @@ class Variable extends CI_Controller {
 
 	public function index()
 	{
-		$variables=new VariableModel;
-		$data['data']=$variables->getAll();
+		$variable=new VariableModel;
+		$variables=$variable->getAll();
    	$this->load->view('templates/header');       
-   	$this->load->view('variables/index',$data);
+   	$this->load->view('variables/index', array('variables'=>$variables));
    	$this->load->view('templates/footer');
 	}
 

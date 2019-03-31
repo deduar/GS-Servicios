@@ -56,6 +56,6 @@ $route['translate_uri_dashes'] = FALSE;
 
 $route['variable'] = 'variable';
 $route['plantilla'] = 'plantilla';
-$route['documento'] = 'document';
+$route['documento'] = 'documento';
 $route['usuario'] = 'usuario';
 

@@ -20,8 +20,8 @@
         <hr style="border-bottom: 1px solid #cecece;">
         <div class="col-md-12" >
             <?php 
-                foreach ($data as $key => $variable) { ?>
-                    <a href="#" onclick="tinyMCE.execCommand('mceReplaceContent',false,'<?php echo '[<b><u>'.$variable['slug'].'</u></b>] '; ?>');return false;" class="collection-item"><?php echo $variable['slug']; ?></a><br>
+                foreach ($variables as $key => $variable) { ?>
+                    <a href="#" onclick="tinyMCE.execCommand('mceReplaceContent',false,'<?php echo '['.$variable->slug.":".$variable->id.']'; ?>');return false;" class="collection-item"><?php echo $variable->slug; ?></a><br>
                 <?php }
             ?>
         </div>
@@ -40,7 +40,7 @@
         <div class="form-group">
             <label class="col-md-12">Plantilla</label>
             <div class="col-md-12">
-                <textarea id="textarea" name="textarea">Hello, World!</textarea>
+                <textarea id="textarea" name="textarea"><?php echo $this->input->post('textarea');?></textarea>
             </div>
         </div>
     </div>  

@@ -10,23 +10,26 @@ class Plantilla extends CI_Controller {
   		parent::__construct();
   		$this->load->model('PlantillaModel');
   		$this->load->model('VariableModel');
+  		$this->load->model('PlantillaVariableModel');
 	}
 
 	public function index()
 	{
-		$plantillas=new PlantillaModel;
-		$data['data']=$plantillas->getAll();
+		$plantilla=new PlantillaModel;
+		$plantillas=$plantilla->getAll();
+		$variable=new VariableModel;
+		$variables=$variable->getAll();
    		$this->load->view('templates/header');       
-   		$this->load->view('plantillas/index', $data);
+   		$this->load->view('plantillas/index', array('plantillas'=>$plantillas,'variables'=>$variables));
    		$this->load->view('templates/footer');
 	}
 
 	public function create()
 	{
-		$variables=new VariableModel;
-		$data['data']=$variables->getAll();
+		$variable=new VariableModel;
+		$variables=$variable->getAll();
 		$this->load->view('templates/header');
-		$this->load->view('plantillas/create', $data);
+		$this->load->view('plantillas/create', array('variables'=>$variables));
 		$this->load->view('templates/footer');      
 	}
 
@@ -44,16 +47,18 @@ class Plantilla extends CI_Controller {
 	    $this->form_validation->set_rules('textarea', 'Plantilla', 'required', array('required' => 'La %s debe tener contenido.'));
 		if ($this->form_validation->run() == FALSE)
 	    {
-	    	$variables=new VariableModel;
-			$vars['data']=$variables->getAll();
+	    	$variable=new VariableModel;
+			$variables=$variable->getAll();
 			$this->load->view('templates/header');
-			$this->load->view('plantillas/create', $vars);
+			$this->load->view('plantillas/create', array('variables'=>$variables));
 			$this->load->view('templates/footer');      
 	    }
 	    else
 	    {
 	    	$plantilla=new PlantillaModel;
-	   		$plantilla->insert_plantilla();
+	   		$data = ($plantilla->insert_plantilla()); 
+	   		$plantillaVariable=new PlantillaVariableModel;
+	   		$plantillaVariable->insert_plantillaVariable($data['filename'],$data['plantilla_id']);
 	   		redirect(base_url('plantilla'));
 	    }
 	  }
@@ -61,8 +66,10 @@ class Plantilla extends CI_Controller {
 	public function edit($id)
  	{
 	    $plantilla = $this->db->get_where('plantillas', array('id' => $id))->row();
+	    $variable=new VariableModel;
+		$variables=$variable->getAll();
 	    $this->load->view('templates/header');
-	    $this->load->view('plantillas/edit',array('plantilla'=>$plantilla));
+	    $this->load->view('plantillas/edit',array('plantilla'=>$plantilla,'variables'=>$variables));
 	    $this->load->view('templates/footer');   
  	}
 
