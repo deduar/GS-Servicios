@@ -23,8 +23,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'https://kycservices.io/contracts/';
-//$config['base_url'] = 'http://localhost/~deduar/Projects/GS-Servicios/';
+//$config['base_url'] = 'https://kycservices.io/contracts/';
+$config['base_url'] = 'http://localhost/~deduar/Projects/GS-Servicios/';
 
 /*
 |--------------------------------------------------------------------------

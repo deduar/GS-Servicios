@@ -64,7 +64,7 @@ class Documento extends CI_Controller {
 			$variable=new VariableModel;
 			$variables = $variable->getAll();
 			$plantilla_variable=new PlantillaVariableModel;
-			$plantilla_variables=$plantilla_variable->getPlantillaID($this->input->post('plantilla_id'));
+			$plantilla_variables=$plantilla_variable->getID($this->input->post('plantilla_id'));
 			$this->load->view('templates/header');
 			$this->load->view('documentos/create_variables', array('plantilla'=>$plantilla,'plantilla_variables'=>$plantilla_variables,'variables'=>$variables));
 			$this->load->view('templates/footer');
@@ -87,7 +87,7 @@ class Documento extends CI_Controller {
 		$variable=new VariableModel;
 		$variables = $variable->getAll();
 		$plantilla_variable=new PlantillaVariableModel;
-		$plantilla_variables=$plantilla_variable->getPlantillaID($this->input->post('plantilla_id'));
+		$plantilla_variables=$plantilla_variable->getID($this->input->post('plantilla_id'));
 
 		foreach ($plantilla_variables as $variable) {
 			$k=0;
@@ -113,7 +113,7 @@ class Documento extends CI_Controller {
 	    else
 	    {
 	    	$documento=new DocumentoModel;
-	   		$documento->insert_documento();
+	   		$documento->insert_documento($plantilla[0]->data);
 
 	   		$documentoVariable=new DocumentoVariableModel;
 	   		$documento_id = $this->db->insert_id();
@@ -132,6 +132,41 @@ class Documento extends CI_Controller {
 	   		}
 	   		redirect(base_url('documento'));
 	    }
+	}
+
+	public function preview($id)
+	{
+		$var = new VariableModel;
+		$vars = $var->getAll();
+
+		$documento = new DocumentoModel;
+		$doc = $documento->getID($id);
+		
+		$documentoVariable = new DocumentoVariableModel;
+		$doc_var = $documentoVariable->getID($doc[0]->id);
+
+		$plantilla = new PlantillaModel;
+		$pl = $plantilla->getID($doc[0]->plantilla_id);
+
+		$plantilla_variable = new PlantillaVariableModel;
+		$pl_var = $plantilla_variable->getID($pl[0]->id);
+
+		$subjectVal = file_get_contents(FCPATH."/upload/plantillas/".$pl[0]->data);
+		$searchVal = array();
+		$replaceVal = array();
+		foreach ($pl_var as $key => $variable) {
+			$k=0;
+			while ($vars[$k]->id != $variable->variable_id) {
+				$k++;
+			}
+			array_push($searchVal, "[".$vars[$k]->slug.":".$variable->variable_id."]");
+			array_push($replaceVal, $doc_var[$key]->valor);
+		}
+		$doc_ready = str_replace($searchVal, $replaceVal, $subjectVal);
+		$this->load->view('templates/header');       
+   		$this->load->view('documentos/preview', array('doc_ready'=>$doc_ready,'plantilla'=>$pl, 'documento'=>$doc));
+   		$this->load->view('templates/footer');
+
 	}
 
 }

@@ -6,7 +6,7 @@
             return $result->result_object();
         }
 
-        public function getPlantillaID($plantilla_id)
+        public function getID($plantilla_id)
         {
           $query = $this->db->get_where('plantilla_variables', array('plantilla_id' => $plantilla_id));
           return $query->result_object();
