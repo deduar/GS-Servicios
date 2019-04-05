@@ -1,6 +1,11 @@
 <?php
     class DocumentoVariableModel extends CI_Model{
 
+      public function getAll(){
+        $result = $this->db->get('documento_variables');
+        return $result->result_object();
+      }
+
       public function insert_documentoVariable($data)
       {   
         $this->db->insert('documento_variables', $data);

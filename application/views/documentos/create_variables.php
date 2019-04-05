@@ -1,7 +1,5 @@
 <?php echo validation_errors(); ?>
-
 <?php echo form_open('documento/store'); ?>
-
 <h3>Nuevo Documento</h3>
 <hr>
 <div class="row">
@@ -14,29 +12,29 @@
             <input type="hidden" name="name" value="<?php echo $this->input->post('name');?>">
         </div>
     </div>
-    <div class="col-md-12">
-        <div class="form-group">
-            <label class="col-md-12">Plantilla</label>
-            <div class="col-md-12">
-                <select name="plantilla_id" class="form-control" disabled>
-                    <option name="plantilla_id" value="<?php $plantilla[0]->id ?>"><?php echo $plantilla[0]->name; ?></option>
-                </select>
-            </div>
-            <input type="hidden" name="plantilla_id" value="<?php echo $this->input->post('plantilla_id');?>">
-        </div>
-    </div>
 
     <?php 
-        foreach ($plantilla_variables as $variable) { ?>
-            <div class="col-md-6">
+        foreach ($plantillas as $key => $plantilla) { ?>
+            <div class="col-md-12">
                 <div class="form-group">
-                    <label class="col-md-12"><?php $k=0; while ($variables[$k]->id != $variable->variable_id) {
-                        $k++;
-                    } ?><?php echo $variables[$k]->slug; ?></label>
+                    <label class="col-md-12"><h4>Plantilla : <?php echo $plantilla[0]->name."-".$plantilla[0]->id; ?></h4></label>
                     <div class="col-md-12">
-                        <input type="text" name="var_<?php echo $variable->posicion; ?>" value="<?php echo $this->input->post('var_'.$variable->posicion);?>" class="form-control">
+                        <div class="row">
+                        <?php $k=0;
+                        foreach ($plantilla_variables[$key] as $vars) {
+                            while ($variables[$k]->id != $vars->variable_id) {
+                                $k++;
+                            } ?>
+                            <label class="col-md-2" style="text-align: right;"><h5><b><?php echo $variables[$k]->slug."-".$variables[$k]->id."-".$vars->posicion ?></h5></b></label>
+                            <div class="col-md-4">
+                                <input type="text" name="<?php echo$variables[$k]->id.".".$plantilla[0]->id.".".$vars->posicion; ?>" value="<?php $vars->posicion;?>" class="form-control" required>
+                            </div>
+                        <?php } ?>
+                        </div>
                     </div>
+                    <hr>
                 </div>
+                <hr>
             </div>
         <?php }
     ?>

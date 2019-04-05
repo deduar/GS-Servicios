@@ -23,8 +23,10 @@ class Documento extends CI_Controller {
 		$variables=$variable->getAll();
 		$documento=new DocumentoModel;
 		$documentos=$documento->getAll();
+		$documentoVariable=new DocumentoVariableModel;
+		$documentoVariables=$documentoVariable->getAll();
    		$this->load->view('templates/header');       
-   		$this->load->view('documentos/index', array('documentos'=>$documentos,'plantillas'=>$plantillas,'variables'=>$variables));
+   		$this->load->view('documentos/index', array('documentos'=>$documentos,'plantillas'=>$plantillas,'variables'=>$variables,'documentoVariables'=>$documentoVariables));
    		$this->load->view('templates/footer');
 	}
 
@@ -39,16 +41,13 @@ class Documento extends CI_Controller {
 
 	public function create_variables()
 	{
-		if (isset($_POST['cancel'])) 
+		if (isset($_POST['cancel']) and $_POST['cancel'] == "cancel") 
   		{
-	    	if($_POST['cancel'] == "cancel")
-	    	{
-	      		redirect(base_url('documento'));
-	    	}
+	      	redirect(base_url('documento'));
 		}
 		$this->form_validation->set_rules('name', 'Nombre', 'required', array('required' => 'Debe indicar la %s.')
 	    );
-	    $this->form_validation->set_rules('plantilla_id', 'Plantilla', 'required', array('required' => 'Debe seleccionar una %s.'));
+	    $this->form_validation->set_rules('plantilla_id[]', 'Plantilla', 'required', array('required' => 'Debe seleccionar al menos una %s.'));
 		if ($this->form_validation->run() == FALSE)
 	    {
 	    	$plantilla=new PlantillaModel;
@@ -59,14 +58,19 @@ class Documento extends CI_Controller {
 	    }
 	    else
 	    {
-	    	$pl=new PlantillaModel;
-			$plantilla = $pl->getID($this->input->post('plantilla_id'));
-			$variable=new VariableModel;
+	    	$variable=new VariableModel;
 			$variables = $variable->getAll();
 			$plantilla_variable=new PlantillaVariableModel;
-			$plantilla_variables=$plantilla_variable->getID($this->input->post('plantilla_id'));
-			$this->load->view('templates/header');
-			$this->load->view('documentos/create_variables', array('plantilla'=>$plantilla,'plantilla_variables'=>$plantilla_variables,'variables'=>$variables));
+			$plantilla_variables=array();
+	    	$pl=new PlantillaModel;
+	    	$pls=array();
+	    	
+	    	foreach ($this->input->post('plantilla_id') as $pl_id) {
+				array_push($plantilla_variables,$plantilla_variable->getID($pl_id));
+				array_push($pls, $pl->getID($pl_id));
+	    	}
+    		$this->load->view('templates/header');
+			$this->load->view('documentos/create_variables', array('plantillas'=>$pls,'plantilla_variables'=>$plantilla_variables,'variables'=>$variables,'plantilla_id'=>$this->input->post('plantilla_id')));
 			$this->load->view('templates/footer');
 	    }
 
@@ -82,56 +86,27 @@ class Documento extends CI_Controller {
 	    	}
 		}
 
-		$pl=new PlantillaModel;
-		$plantilla = $pl->getID($this->input->post('plantilla_id'));
-		$variable=new VariableModel;
-		$variables = $variable->getAll();
-		$plantilla_variable=new PlantillaVariableModel;
-		$plantilla_variables=$plantilla_variable->getID($this->input->post('plantilla_id'));
+    	$documento=new DocumentoModel;
+   		$documento->insert_documento();
+   		$documento_id = $this->db->insert_id();
 
-		foreach ($plantilla_variables as $variable) {
-			$k=0;
-			while ($variables[$k]->id != $variable->variable_id) {
-				$k++;
-			}
+   		$documentoVariable = new DocumentoVariableModel;
 
-			$this->form_validation->set_rules("var_".$variable->posicion, $variables[$k]->description, 'required', array('required' => 'Debe indicar la variable %s.'));
-		}
+   		foreach ($_POST as $key => $value) {
+   			if (!in_array($key,array("name","submit"))) {
+				$data = array(
+					'plantilla_id' => explode("_", $key)[1],
+					'documento_id' => $documento_id,
+					'variable_id'=> explode("_", $key)[0],
+					'valor' => $value,
+					'posicion' => explode("_", $key)[2]
+				);
+				$documentoVariable->insert_documentoVariable($data);
+   			}
+   			
+   		}
 
-		if ($this->form_validation->run() == FALSE)
-	    {
-	    	$pl=new PlantillaModel;
-			$plantilla = $pl->getID($this->input->post('plantilla_id'));
-			$variable=new VariableModel;
-			$variables = $variable->getAll();
-			$plantilla_variable=new PlantillaVariableModel;
-			$plantilla_variables=$plantilla_variable->getPlantillaID($this->input->post('plantilla_id'));
-			$this->load->view('templates/header');
-			$this->load->view('documentos/create_variables', array('plantilla'=>$plantilla,'plantilla_variables'=>$plantilla_variables,'variables'=>$variables));
-			$this->load->view('templates/footer');
-	    }
-	    else
-	    {
-	    	$documento=new DocumentoModel;
-	   		$documento->insert_documento($plantilla[0]->data);
-
-	   		$documentoVariable=new DocumentoVariableModel;
-	   		$documento_id = $this->db->insert_id();
-	   		
-	   		$k=1;
-	   		foreach ($plantilla_variables as $var) {
-	   			$data = array(
-	   				'plantilla_id' => $this->input->post('plantilla_id'),
-	   				'documento_id' => $documento_id,
-	   				'variable_id' => $var->variable_id,
-	   				'valor' => $this->input->post('var_'.$k),
-	   				'posicion' => $k
-	   			);
-	   			$k++;
-	   			$documentoVariable->insert_documentoVariable($data);
-	   		}
-	   		redirect(base_url('documento'));
-	    }
+   		redirect(base_url('documento'));
 	}
 
 	public function preview($id)

@@ -1,12 +1,19 @@
 <?php
     class DocumentoModel extends CI_Model{
         
+        /*
         public function getAll(){
-        	$query = $this->db->select('d.name, d.id as documento_id, d.created, d.modified, d.plantilla_id, p.id, p.name as plantilla_name')
+        	$query = $this->db->select('d.name, d.id as documento_id, d.created, d.modified, p.id, p.name as plantilla_name')
                   ->from('documentos as d')
                   ->join('plantillas as p', 'p.id = d.plantilla_id')
                   ->get();
 			return $query->result_object();
+        }
+        */
+
+        public function getAll(){
+            $result = $this->db->get('documentos');
+            return $result->result_object();
         }
 
         public function getID($id)
@@ -15,14 +22,10 @@
 			return $query->result_object();
 	    }
 
-        public function insert_documento($plantilla_data)
+        public function insert_documento()
 	    {
-	    	$filename = time();
-	    	write_file(FCPATH."upload/documentos/".$filename, "upload/documentos/".$plantilla_data); 
 	        $data = array(
-	            'name' => $this->input->post('name'),
-	            'plantilla_id' => $this->input->post('plantilla_id'),
-	            'data' => $plantilla_data
+	            'name' => $this->input->post('name')
 	        );
 	        return $this->db->insert('documentos', $data);
 
