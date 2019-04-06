@@ -111,20 +111,14 @@ class Documento extends CI_Controller {
 
 	public function preview($id)
 	{
-		$var = new VariableModel;
-		$vars = $var->getAll();
+		$documentoVariable=new DocumentoVariableModel;
+		$documentoVariables = $documentoVariable->getID($id);
 
-		$documento = new DocumentoModel;
-		$doc = $documento->getID($id);
-		
-		$documentoVariable = new DocumentoVariableModel;
-		$doc_var = $documentoVariable->getID($doc[0]->id);
+		foreach ($documentoVariables as $key => $docVar) {
+			echo $docVar->id."-".$docVar->plantilla_id."-".$docVar->variable_id."<br>";
+		}
 
-		$plantilla = new PlantillaModel;
-		$pl = $plantilla->getID($doc[0]->plantilla_id);
-
-		$plantilla_variable = new PlantillaVariableModel;
-		$pl_var = $plantilla_variable->getID($pl[0]->id);
+		die();
 
 		$subjectVal = file_get_contents(FCPATH."/upload/plantillas/".$pl[0]->data);
 		$searchVal = array();

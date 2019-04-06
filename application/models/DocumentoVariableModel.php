@@ -14,7 +14,7 @@
       public function getID($id)
       {
       	$query = $this->db->get_where('documento_variables', array('documento_id' => $id));
-		return $query->result_object();
+		    return $query->result_object();
       }
 
     }
